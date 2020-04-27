@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Article = require("../models").Article;
+const Comment = require("../models").Comment;
 
 /* Handler function to wrap each route. */
 function asyncHandler(cb) {
@@ -76,9 +77,12 @@ router.get(
   "/:id",
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.id);
+    const comments = await Comment.findAll();
+
     if (article) {
       res.render("articles/show", {
         article,
+        //comments,
         title: article.title,
       });
     } else {

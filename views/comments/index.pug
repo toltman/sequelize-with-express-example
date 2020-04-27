@@ -1,0 +1,17 @@
+div.subheader
+  h2 Comments
+  a(href="/articles/id/comments/new", class="btn-new") Leave a Comment &#43;
+  
+//each comment in comments
+article
+  include by_line
+  // comment.author
+  // comment.createdAt
+
+  // p= comment.body
+  p Lorem ipsum dolor sit amet consectetur adipisicing elit. Eum amet, a quae, adipisci at pariatur enim tempora ipsa corporis ut, minima ea maxime dolorem animi nostrum ex aut mollitia saepe!
+  a(href="/articles/id/comments/id" + "/edit") Edit Comment 
+  // a(href="/articles/" + article.id + "/comments/" + comment.id + "/edit")
+  | | 
+  a(href="/articles/id/comments/id" + "/delete") Delete Comment
+  // a(href="/articles/" + article.id + "/comments/" + comment.id + "/delete")
