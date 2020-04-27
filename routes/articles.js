@@ -17,7 +17,7 @@ function asyncHandler(cb) {
 router.get(
   "/",
   asyncHandler(async (req, res) => {
-    const articles = await Article.findAll();
+    const articles = await Article.findAll({ order: [["createdAt", "DESC"]] });
     res.render("articles/index", {
       articles,
       title: "Sequelize-It!",
@@ -57,8 +57,8 @@ router.get(
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.id);
     res.render("articles/show", {
-      article: article.toJSON(),
-      title: "Article Title",
+      article,
+      title: article.title,
     });
   })
 );
@@ -68,10 +68,7 @@ router.post(
   "/:id/edit",
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.id);
-    article.title = req.body.title;
-    article.author = req.body.author;
-    article.body = req.body.body;
-    article.save();
+    await article.update(req.body);
     res.redirect("/articles/" + article.id);
   })
 );
@@ -82,7 +79,7 @@ router.get(
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.id);
     res.render("articles/delete", {
-      article: article.toJSON(),
+      article,
       title: "Delete Article",
     });
   })
