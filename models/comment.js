@@ -1,14 +1,19 @@
 "use strict";
 const Sequelize = require("sequelize");
-// const moment = require("moment");
+const moment = require("moment");
 
 module.exports = (sequelize) => {
-  class Comment extends Sequelize.Model {}
+  class Comment extends Sequelize.Model {
+    publishedAt() {
+      const date = moment(this.createdAt).format("MMMM D, YYYY, h:mma");
+      return date;
+    }
+  }
   Comment.init(
     {
       author: Sequelize.STRING,
       article_id: Sequelize.STRING,
-      body: Sequelize.TEXT,
+      body: Sequelize.TEXT, // unlimited length - would need to control this
     },
     { sequelize }
   );
