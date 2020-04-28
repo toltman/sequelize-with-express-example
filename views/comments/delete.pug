@@ -1,1 +1,14 @@
-p Delete comment
+extends ../layout
+
+block content
+  h2= title
+  article
+    include by_line
+    p= comment.body
+  p
+    | Are you sure you want to delete this comment?
+
+  form(action=`/articles/${article.id}/comments/${comment.id}/delete`, method="post")
+    a(href=`/articles/${article.id}`) No! Take me back! 
+    | 
+    input(type="submit", value = "Yes, I'm sure")

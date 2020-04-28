@@ -77,12 +77,17 @@ router.get(
   "/:id",
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.id);
-    const comments = await Comment.findAll();
+    const comments = await Comment.findAll({
+      where: {
+        article_id: parseInt(req.params.id),
+      },
+      order: [["createdAt", "DESC"]],
+    });
 
     if (article) {
       res.render("articles/show", {
         article,
-        //comments,
+        comments,
         title: article.title,
       });
     } else {

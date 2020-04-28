@@ -1,13 +1,13 @@
 "use strict";
 const Sequelize = require("sequelize");
-const moment = require("moment");
+// const moment = require("moment");
 
 module.exports = (sequelize) => {
   class Comment extends Sequelize.Model {}
   Comment.init(
     {
       author: Sequelize.STRING,
-      articleId: Sequelize.INTEGER,
+      article_id: Sequelize.STRING,
       body: Sequelize.TEXT,
     },
     { sequelize }

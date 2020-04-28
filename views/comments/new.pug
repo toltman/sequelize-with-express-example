@@ -1,0 +1,14 @@
+extends ../layout
+
+block content
+  article
+    h2= article.title
+    p=  article.body
+    = article.author
+    |  | 
+    = article.publishedAt()
+    
+  h2= title
+
+  form(action=`/articles/${article.id}/comments/new`, method="post")
+    include form

@@ -1,1 +1,7 @@
-p Edit comment
+extends ../layout
+
+block content
+  h2= title
+
+  form(action=`/articles/${article.id}/comments/${comment.id}/edit`, method="post")
+    include form
