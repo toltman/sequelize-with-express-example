@@ -112,4 +112,17 @@ router.get(
   })
 );
 
+router.post(
+  "/:articleId/comments/:commentId/delete",
+  asyncHandler(async (req, res) => {
+    const comment = await Comment.findByPk(req.params.commentId);
+    if (comment) {
+      await comment.destroy();
+      res.redirect(`/articles/${req.params.articleId}`);
+    } else {
+      res.sendStatus(404);
+    }
+  })
+);
+
 module.exports = router;
