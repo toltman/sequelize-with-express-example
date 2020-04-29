@@ -32,7 +32,6 @@ router.get(
         ],
         where: { article_id: article.id },
       });
-      console.log(comments[0].dataValues.n_comments);
       article.n_comments = comments[0].dataValues.n_comments;
       return article;
     });
