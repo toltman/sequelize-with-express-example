@@ -18,10 +18,29 @@ function asyncHandler(cb) {
 router.get(
   "/",
   asyncHandler(async (req, res) => {
-    const articles = await Article.findAll({ order: [["createdAt", "DESC"]] });
-    res.render("articles/index", {
-      articles,
-      title: "Sequelize-It!",
+    const articles = await Article.findAll({
+      order: [["createdAt", "DESC"]],
+    });
+    const newArticles = articles.map(async (article) => {
+      comments = await Comment.findAll({
+        // SELECT COUNT(id) FROM comments WHERE article_id = article.id
+        attributes: [
+          [
+            Comment.sequelize.fn("COUNT", Comment.sequelize.col("id")),
+            "n_comments",
+          ],
+        ],
+        where: { article_id: article.id },
+      });
+      console.log(comments[0].dataValues.n_comments);
+      article.n_comments = comments[0].dataValues.n_comments;
+      return article;
+    });
+    Promise.all(newArticles).then((newArticles) => {
+      res.render("articles/index", {
+        articles: newArticles,
+        title: "Sequelize-It!",
+      });
     });
   })
 );
