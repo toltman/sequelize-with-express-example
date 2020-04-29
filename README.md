@@ -4,7 +4,12 @@ This project is an example project from the [Using Sequelize ORM With Express](h
 
 ## Extensions
 
-I am adding several extensions to this project
+I have added several extensions to this project
 
-- Added comment to articles.
-- adding pagination to the results in /articles/
+- Added comments to articles.
+- Added comment counts on the /articles page.
+
+Currently, I'm working on the following extensions:
+
+- adding pagination to the results in /articles
+- adding user authentication (possibly adding later)
