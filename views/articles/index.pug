@@ -10,9 +10,9 @@ block content
       h3= article.title
       include by_line
       p= article.shortDescription()
-      if (article.Comments.length == 1)
+      if (article.toJSON().commentCount == 1)
         | (1 comment) |
       else
-        | (#{article.Comments.length} comments) | 
+        | (#{article.toJSON().commentCount} comments) | 
       a(href = "/articles/" + article.id) Read More &rarr;
       

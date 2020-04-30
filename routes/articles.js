@@ -2,6 +2,14 @@ const express = require("express");
 const router = express.Router();
 const Article = require("../models").Article;
 const Comment = require("../models").Comment;
+const sequelize = require("../models").sequelize;
+
+/* Function to display result of query */
+function displayResults(results) {
+  results.forEach((result) => {
+    console.dir(result.toJSON());
+  });
+}
 
 /* Handler function to wrap each route. */
 function asyncHandler(cb) {
@@ -20,9 +28,22 @@ router.get(
   asyncHandler(async (req, res) => {
     // refactor here to just pass along the comment counts
     const articles = await Article.findAll({
-      include: Comment,
+      attributes: {
+        include: [
+          [
+            sequelize.literal(
+              `(SELECT COUNT(*)
+              FROM comments AS comment
+              WHERE comment.ArticleId = article.id
+              )`
+            ),
+            "commentCount",
+          ],
+        ],
+      },
       order: [["createdAt", "DESC"]],
-    });
+    }); //.then(displayResults);
+
     res.render("articles/index", {
       articles,
       title: "Articles",
@@ -80,9 +101,9 @@ router.get(
 router.get(
   "/:id",
   asyncHandler(async (req, res) => {
-    // refactor here to display the comments in the correct order
     const article = await Article.findByPk(req.params.id, {
       include: Comment,
+      order: [[Comment, "createdAt", "DESC"]],
     });
     if (article) {
       res.render("articles/show", {
