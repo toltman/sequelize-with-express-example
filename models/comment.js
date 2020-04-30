@@ -12,7 +12,6 @@ module.exports = (sequelize) => {
   Comment.init(
     {
       author: Sequelize.STRING,
-      article_id: Sequelize.STRING,
       body: Sequelize.TEXT, // unlimited length - would need to control this
     },
     { sequelize }

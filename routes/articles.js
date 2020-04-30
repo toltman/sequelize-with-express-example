@@ -18,28 +18,14 @@ function asyncHandler(cb) {
 router.get(
   "/",
   asyncHandler(async (req, res) => {
+    // refactor here to just pass along the comment counts
     const articles = await Article.findAll({
+      include: Comment,
       order: [["createdAt", "DESC"]],
     });
-    const newArticles = articles.map(async (article) => {
-      comments = await Comment.findAll({
-        // SELECT COUNT(id) FROM comments WHERE article_id = article.id
-        attributes: [
-          [
-            Comment.sequelize.fn("COUNT", Comment.sequelize.col("id")),
-            "n_comments",
-          ],
-        ],
-        where: { article_id: article.id },
-      });
-      article.n_comments = comments[0].dataValues.n_comments;
-      return article;
-    });
-    Promise.all(newArticles).then((newArticles) => {
-      res.render("articles/index", {
-        articles: newArticles,
-        title: "Sequelize-It!",
-      });
+    res.render("articles/index", {
+      articles,
+      title: "Articles",
     });
   })
 );
@@ -94,18 +80,13 @@ router.get(
 router.get(
   "/:id",
   asyncHandler(async (req, res) => {
-    const article = await Article.findByPk(req.params.id);
-    const comments = await Comment.findAll({
-      where: {
-        article_id: parseInt(req.params.id),
-      },
-      order: [["createdAt", "DESC"]],
+    // refactor here to display the comments in the correct order
+    const article = await Article.findByPk(req.params.id, {
+      include: Comment,
     });
-
     if (article) {
       res.render("articles/show", {
         article,
-        comments,
         title: article.title,
       });
     } else {

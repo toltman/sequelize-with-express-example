@@ -10,8 +10,9 @@ block content
       h3= article.title
       include by_line
       p= article.shortDescription()
-      if (article.n_comments === 1)
-        | (1 comment) | 
+      if (article.Comments.length == 1)
+        | (1 comment) |
       else
-        | (#{article.n_comments} comments) | 
+        | (#{article.Comments.length} comments) | 
       a(href = "/articles/" + article.id) Read More &rarr;
+      

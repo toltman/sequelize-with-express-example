@@ -2,7 +2,7 @@ div.subheader
   h3 Comments
   a(href=`/articles/${article.id}/comments/new`, class="btn-new") Leave a Comment &#43;
   
-each comment in comments
+each comment in article.Comments
   article
     include by_line
     p= comment.body

@@ -31,11 +31,11 @@ router.get(
 router.post(
   "/:articleId/comments/new",
   asyncHandler(async (req, res) => {
-    const article_id = parseInt(req.params.articleId);
+    const ArticleId = parseInt(req.params.articleId);
     let comment;
     try {
-      comment = await Comment.create({ ...req.body, article_id });
-      res.redirect(`/articles/${article_id}`);
+      comment = await Comment.create({ ...req.body, ArticleId });
+      res.redirect(`/articles/${ArticleId}`);
     } catch (error) {
       if (error.name === "SequelizeValidationError") {
         article = await Article.build(req.body);
@@ -56,10 +56,8 @@ router.post(
 router.get(
   "/:articleId/comments/:commentId/edit",
   asyncHandler(async (req, res) => {
-    const article = await Article.findByPk(req.params.articleId);
     const comment = await Comment.findByPk(req.params.commentId);
     res.render("comments/edit", {
-      article,
       comment,
       title: "Edit Comment",
     });
@@ -70,21 +68,19 @@ router.get(
 router.post(
   "/:articleId/comments/:commentId/edit",
   asyncHandler(async (req, res) => {
-    const article_id = parseInt(req.params.articleId);
     let comment;
     try {
       comment = await Comment.findByPk(req.params.commentId);
       if (comment) {
-        await comment.update({ ...req.body, article_id });
-        res.redirect(`/articles/${article_id}/`);
+        await comment.update({ ...req.body });
+        res.redirect(`/articles/${comment.ArticleId}/`);
       } else {
         res.sendStatus(404);
       }
     } catch (error) {
       if (error.name === "SequelizeValidationError") {
-        article = await comment.build({ ...req.body, article_id });
+        article = await comment.build({ ...req.body });
         res.render("/:articleId/comments/:commentId/edit", {
-          article,
           comment,
           errors: error.errors,
           title: "Edit Article",
@@ -98,11 +94,9 @@ router.post(
 router.get(
   "/:articleId/comments/:commentId/delete",
   asyncHandler(async (req, res) => {
-    const article = await Article.findByPk(req.params.articleId);
     const comment = await Comment.findByPk(req.params.commentId);
-    if (article && comment) {
+    if (comment) {
       res.render("comments/delete", {
-        article,
         comment,
         title: "Delete Comment",
       });
