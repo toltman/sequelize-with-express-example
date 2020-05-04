@@ -4,14 +4,14 @@ const Article = require("../models").Article;
 const Comment = require("../models").Comment;
 const sequelize = require("../models").sequelize;
 
-/* Function to display result of query */
+/* Function to display result of query (for testing) */
 function displayResults(results) {
   results.forEach((result) => {
     console.dir(result.toJSON());
   });
 }
 
-/* Handler function to wrap each route. */
+/* Error handler function to wrap each route. */
 function asyncHandler(cb) {
   return async (req, res, next) => {
     try {
@@ -26,9 +26,17 @@ function asyncHandler(cb) {
 router.get(
   "/",
   asyncHandler(async (req, res) => {
-    // refactor here to just pass along the comment counts
+    const { page = 1 } = req.query; // get page number from query
+    const limit = 5; // max articles returned per page
+    const offset = (page - 1) * limit;
+
+    // get the maximum number of pages
+    const maxPages = Math.ceil((await Article.count()) / limit);
+
+    // get articles
     const articles = await Article.findAll({
       attributes: {
+        // get comment counts
         include: [
           [
             sequelize.literal(
@@ -41,12 +49,16 @@ router.get(
           ],
         ],
       },
-      order: [["createdAt", "DESC"]],
+      order: [["createdAt", "DESC"]], // reverse-chronological order
+      limit,
+      offset,
     }); //.then(displayResults);
 
     res.render("articles/index", {
       articles,
       title: "Articles",
+      page,
+      maxPages,
     });
   })
 );
@@ -101,6 +113,7 @@ router.get(
 router.get(
   "/:id",
   asyncHandler(async (req, res) => {
+    // get article along with comments
     const article = await Article.findByPk(req.params.id, {
       include: Comment,
       order: [[Comment, "createdAt", "DESC"]],

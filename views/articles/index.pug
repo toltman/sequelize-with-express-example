@@ -16,3 +16,12 @@ block content
         | (#{article.toJSON().commentCount} comments) | 
       a(href = "/articles/" + article.id) Read More &rarr;
       
+  div.pagination
+    - page = parseInt(page)
+    - maxPages = parseInt(maxPages)
+    if (page > 1)
+      a( href="/articles?page=" + (page-1) ) &larr; Back | 
+    | Page #{page} 
+    if (page < maxPages)
+      | | 
+      a( href="/articles?page=" + (page+1) ) Next &rarr; 
