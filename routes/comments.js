@@ -19,11 +19,15 @@ router.get(
   "/:articleId/comments/new",
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.articleId);
-    res.render("comments/new", {
-      article,
-      comment: {},
-      title: "New Comment",
-    });
+    if (article) {
+      res.render("comments/new", {
+        article,
+        comment: {},
+        title: "New Comment",
+      });
+    } else {
+      res.sendStatus(404);
+    }
   })
 );
 
@@ -79,11 +83,13 @@ router.post(
       }
     } catch (error) {
       if (error.name === "SequelizeValidationError") {
-        article = await comment.build({ ...req.body });
-        res.render("/:articleId/comments/:commentId/edit", {
+        comment = await Comment.build({ ...req.body });
+        comment.id = req.params.commentId;
+        comment.ArticleId = req.params.articleId;
+        res.render("comments/edit", {
           comment,
           errors: error.errors,
-          title: "Edit Article",
+          title: "Edit Comment",
         });
       }
     }

@@ -11,8 +11,22 @@ module.exports = (sequelize) => {
   }
   Comment.init(
     {
-      author: Sequelize.STRING,
-      body: Sequelize.TEXT, // unlimited length - would need to control this
+      author: {
+        type: Sequelize.STRING,
+        validate: {
+          notEmpty: {
+            msg: '"Author" is required',
+          },
+        },
+      },
+      body: {
+        type: Sequelize.TEXT, // should store up to 65kb of text data
+        validate: {
+          notEmpty: {
+            msg: '"Body" is required',
+          },
+        },
+      },
     },
     { sequelize }
   );

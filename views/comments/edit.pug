@@ -3,5 +3,7 @@ extends ../layout
 block content
   h2= title
 
+  include ../articles/errors
+
   form(action=`/articles/${comment.ArticleId}/comments/${comment.id}/edit`, method="post")
     include form
