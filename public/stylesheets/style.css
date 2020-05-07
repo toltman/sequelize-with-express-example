@@ -878,6 +878,10 @@ a:active,
 a:focus {
   color: #797a9e;
 }
+a.nav-item {
+  padding: 1rem;
+  font-size: large;
+}
 
 h1 {
   text-align: center;
@@ -889,7 +893,7 @@ header {
   color: white;
   background-color: #9893da;
   padding: 0.85em 0 1.35em 0;
-  margin-bottom: 70px;
+  margin-bottom: 0px;
 }
 
 .container {
