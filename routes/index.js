@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models").User;
+const mid = require("../middleware");
 
 /* GET home page. */
 router.get("/", (req, res, next) => {
@@ -49,25 +50,32 @@ router.get("/login", (req, res, next) => {
 /* POST Login */
 router.post("/login", async (req, res, next) => {
   if (req.body.email && req.body.password) {
-    try {
-      await User.authenticate(
-        req.body.email,
-        req.body.password,
-        (error, user) => {
-          if (error || !user) {
-            var err = new Error("Wrong email or password.");
-            err.status = 401;
-            return next(err);
-          } else {
-            // send user details without password
-            // Also look up articles?
-            res.render("profile", { name: user.name, email: user.email });
-          }
-        }
-      );
-    } catch (err) {
-      throw err;
-    }
+    User.authenticate(req.body.email, req.body.password, (error, user) => {
+      if (error || !user) {
+        var err = new Error("Wrong email or password.");
+        err.status = 401;
+        return next(err);
+      } else {
+        // Also look up articles?
+        // res.render("profile", { name: user.name, email: user.email });
+        req.session.userId = user.id;
+        return res.redirect("/profile");
+      }
+    });
+  }
+});
+
+/* GET profile */
+router.get("/profile", mid.requiresLogin, async function (req, res, next) {
+  try {
+    const user = await User.findByPk(req.session.userId);
+    res.render("profile", {
+      title: "Profile",
+      name: user.name,
+      email: user.email,
+    });
+  } catch (err) {
+    throw err;
   }
 });
 

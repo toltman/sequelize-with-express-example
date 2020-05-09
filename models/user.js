@@ -33,7 +33,6 @@ module.exports = (sequelize) => {
 
       // compare password
       const result = await bcrypt.compare(password, user.password);
-      console.log(result);
       if (result) {
         return callback(null, user);
       } else {

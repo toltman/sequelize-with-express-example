@@ -3,12 +3,28 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const session = require("express-session");
 
 const routes = require("./routes/index");
 const articles = require("./routes/articles");
 const comments = require("./routes/comments");
 
 const app = express();
+
+// use sessions
+app.use(
+  session({
+    secret: "My first database app",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// make userID available in templates
+app.use(function (req, res, next) {
+  res.locals.currentUser = req.session.userId;
+  next();
+});
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
