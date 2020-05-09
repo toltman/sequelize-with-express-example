@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const mid = require("../middleware");
 const Article = require("../models").Article;
 const Comment = require("../models").Comment;
+const sequelize = require("../models").sequelize;
 
 /* Handler function to wrap each route. */
 function asyncHandler(cb) {
@@ -17,8 +19,24 @@ function asyncHandler(cb) {
 /* Create a new comment form */
 router.get(
   "/:articleId/comments/new",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
-    const article = await Article.findByPk(req.params.articleId);
+    const article = await Article.findByPk(req.params.articleId, {
+      attributes: {
+        include: [
+          [
+            sequelize.literal(
+              `(
+                SELECT user.name
+                FROM Users as user
+                WHERE user.id = article.UserId
+              )`
+            ),
+            "author",
+          ],
+        ],
+      },
+    });
     if (article) {
       res.render("comments/new", {
         article,
@@ -34,11 +52,16 @@ router.get(
 /* POST new comment */
 router.post(
   "/:articleId/comments/new",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
     const ArticleId = parseInt(req.params.articleId);
     let comment;
     try {
-      comment = await Comment.create({ ...req.body, ArticleId });
+      comment = await Comment.create({
+        ...req.body,
+        ArticleId,
+        UserId: req.session.userId,
+      });
       res.redirect(`/articles/${ArticleId}`);
     } catch (error) {
       if (error.name === "SequelizeValidationError") {

@@ -114,14 +114,21 @@ router.post(
 /* Edit article form. */
 router.get(
   "/:id/edit",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.id);
     if (article) {
-      res.render("articles/edit", {
-        article,
-        title: "Edit Article",
-      });
+      // user is the author of the article
+      if (article.UserId === req.session.userId) {
+        res.render("articles/edit", {
+          article,
+          title: "Edit Article",
+        });
+      } else {
+        res.send("You are not the author of this article.");
+      }
     } else {
+      // else article is not found
       res.sendStatus(404);
     }
   })
@@ -133,7 +140,37 @@ router.get(
   asyncHandler(async (req, res) => {
     // get article along with comments
     const article = await Article.findByPk(req.params.id, {
-      include: Comment,
+      attributes: {
+        include: [
+          [
+            sequelize.literal(
+              `(
+                SELECT user.name
+                FROM Users as user
+                WHERE user.id = article.UserId
+              )`
+            ),
+            "author",
+          ],
+        ],
+      },
+      include: {
+        model: Comment,
+        // attributes: {
+        //   include: [
+        //     [
+        //       sequelize.literal(
+        //         `(
+        //           SELECT user.name
+        //           FROM Users as user
+        //           WHERE user.id = comment.UserId
+        //         )`
+        //       ),
+        //       "author",
+        //     ],
+        //   ],
+        // },
+      },
       order: [[Comment, "createdAt", "DESC"]],
     });
     if (article) {
@@ -150,14 +187,22 @@ router.get(
 /* Update an article. */
 router.post(
   "/:id/edit",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
     let article;
     try {
       article = await Article.findByPk(req.params.id);
       if (article) {
-        await article.update(req.body);
-        res.redirect("/articles/" + article.id);
+        if (article.UserId === req.session.userId) {
+          // user is the author
+          await article.update(req.body);
+          res.redirect("/articles/" + article.id);
+        } else {
+          // user is not the author
+          res.send("You are not the author of this article.");
+        }
       } else {
+        // article is not found
         res.sendStatus(404);
       }
     } catch (error) {
@@ -177,13 +222,18 @@ router.post(
 /* Delete article form. */
 router.get(
   "/:id/delete",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.id);
     if (article) {
-      res.render("articles/delete", {
-        article,
-        title: "Delete Article",
-      });
+      if (article.UserId === req.session.userId) {
+        res.render("articles/delete", {
+          article,
+          title: "Delete Article",
+        });
+      } else {
+        res.send("You are not the author of this article.");
+      }
     } else {
       res.sendStatus(404);
     }
@@ -196,8 +246,12 @@ router.post(
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.id);
     if (article) {
-      await article.destroy();
-      res.redirect("/articles");
+      if (article.UserId === req.session.userId) {
+        await article.destroy();
+        res.redirect("/articles");
+      } else {
+        res.send("You are not the author of this article.");
+      }
     } else {
       res.sendStatus(404);
     }

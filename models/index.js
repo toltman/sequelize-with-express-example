@@ -43,6 +43,9 @@ db.Comment.belongsTo(db.Article);
 db.User.hasMany(db.Article);
 db.Article.belongsTo(db.User);
 
+db.User.hasMany(db.Comment);
+db.Comment.belongsTo(db.User);
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

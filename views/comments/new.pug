@@ -4,7 +4,7 @@ block content
   article
     h2= article.title
     p=  article.body
-    = article.author
+    = article.toJSON().author
     |  | 
     = article.publishedAt()
     
