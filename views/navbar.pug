@@ -1,3 +1,8 @@
 nav.container
-  a.nav-item(href='register') Sign Up
-  a.nav-item(href='login') Login
+  if !currentUser
+    a.nav-item(href='register') Sign Up
+  a.nav-item(href='profile') Profile
+  if currentUser
+    a.nav-item(href='logout') Logout
+  else
+    a.nav-item(href='login') Login

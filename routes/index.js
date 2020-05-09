@@ -65,6 +65,19 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
+/* GET logout */
+router.get("/logout", function (req, res, next) {
+  if (req.session) {
+    req.session.destroy(function (err) {
+      if (err) {
+        return next(err);
+      } else {
+        return res.redirect("/");
+      }
+    });
+  }
+});
+
 /* GET profile */
 router.get("/profile", mid.requiresLogin, async function (req, res, next) {
   try {
