@@ -20,9 +20,10 @@ app.use(
   })
 );
 
-// make userID available in templates
+// make userID and name available in templates
 app.use(function (req, res, next) {
-  res.locals.currentUser = req.session.userId;
+  res.locals.userId = req.session.userId;
+  res.locals.userName = req.session.userName;
   next();
 });
 

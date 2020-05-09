@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mid = require("../middleware");
 const Article = require("../models").Article;
 const Comment = require("../models").Comment;
 const sequelize = require("../models").sequelize;
@@ -17,6 +18,7 @@ function asyncHandler(cb) {
     try {
       await cb(req, res, next);
     } catch (error) {
+      console.error(error);
       res.status(500).send(error);
     }
   };
@@ -36,8 +38,8 @@ router.get(
     // get articles
     const articles = await Article.findAll({
       attributes: {
-        // get comment counts
         include: [
+          // get comment counts
           [
             sequelize.literal(
               `(SELECT COUNT(*)
@@ -46,6 +48,16 @@ router.get(
               )`
             ),
             "commentCount",
+          ],
+          // get article authors
+          [
+            sequelize.literal(
+              `(SELECT user.name 
+                FROM Users as user 
+                WHERE user.id = article.UserId
+                )`
+            ),
+            "author",
           ],
         ],
       },
@@ -64,17 +76,23 @@ router.get(
 );
 
 /* Create a new article form. */
-router.get("/new", (req, res) => {
+router.get("/new", mid.requiresLogin, (req, res) => {
   res.render("articles/new", { article: {}, title: "New Article" });
 });
 
 /* POST create article. */
 router.post(
   "/",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
+    console.log(req.body);
     let article;
     try {
-      article = await Article.create(req.body);
+      article = await Article.create({
+        ...req.body,
+        // associate userId with the article
+        UserId: req.session.userId,
+      });
       res.redirect(`/articles/${article.id}`);
     } catch (error) {
       // checking the error type

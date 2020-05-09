@@ -878,7 +878,7 @@ a:active,
 a:focus {
   color: #797a9e;
 }
-a.nav-item {
+.nav-item {
   padding: 1rem;
   font-size: large;
 }

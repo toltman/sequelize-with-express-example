@@ -40,6 +40,9 @@ Object.keys(db).forEach((modelName) => {
 db.Article.hasMany(db.Comment);
 db.Comment.belongsTo(db.Article);
 
+db.User.hasMany(db.Article);
+db.Article.belongsTo(db.User);
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

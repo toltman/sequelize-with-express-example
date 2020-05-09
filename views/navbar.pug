@@ -1,8 +1,11 @@
 nav.container
-  if !currentUser
-    a.nav-item(href='register') Sign Up
-  a.nav-item(href='profile') Profile
-  if currentUser
-    a.nav-item(href='logout') Logout
+  if userId
+    span.nav-item Welcome [#{userName}]
+  a.nav-item(href="/articles") Articles
+  if !userId
+    a.nav-item(href='/register') Sign Up
+  a.nav-item(href='/profile') Profile
+  if userId
+    a.nav-item(href='/logout') Logout
   else
-    a.nav-item(href='login') Login
+    a.nav-item(href='/login') Login

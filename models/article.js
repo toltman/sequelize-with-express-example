@@ -26,14 +26,6 @@ module.exports = (sequelize) => {
           },
         },
       },
-      author: {
-        type: Sequelize.STRING,
-        validate: {
-          notEmpty: {
-            msg: '"Author" is required',
-          },
-        },
-      },
       body: {
         type: Sequelize.TEXT,
         validate: {

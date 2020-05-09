@@ -59,6 +59,7 @@ router.post("/login", async (req, res, next) => {
         // Also look up articles?
         // res.render("profile", { name: user.name, email: user.email });
         req.session.userId = user.id;
+        req.session.userName = user.name;
         return res.redirect("/profile");
       }
     });
