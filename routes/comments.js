@@ -82,12 +82,17 @@ router.post(
 /* Edit comment form */
 router.get(
   "/:articleId/comments/:commentId/edit",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
     const comment = await Comment.findByPk(req.params.commentId);
-    res.render("comments/edit", {
-      comment,
-      title: "Edit Comment",
-    });
+    if (req.session.userId === comment.UserId) {
+      res.render("comments/edit", {
+        comment,
+        title: "Edit Comment",
+      });
+    } else {
+      res.send("You are not the author of this comment.");
+    }
   })
 );
 
@@ -99,12 +104,21 @@ router.post(
     try {
       comment = await Comment.findByPk(req.params.commentId);
       if (comment) {
-        await comment.update({ ...req.body });
-        res.redirect(`/articles/${comment.ArticleId}/`);
+        // comment exists
+        if (req.session.userId === comment.UserId) {
+          // user is author of the comment
+          await comment.update({ ...req.body });
+          res.redirect(`/articles/${comment.ArticleId}/`);
+        } else {
+          // user is not the author of the comment
+          res.send("You are not the author of this comment.");
+        }
       } else {
+        // comment is not found
         res.sendStatus(404);
       }
     } catch (error) {
+      // database error
       if (error.name === "SequelizeValidationError") {
         comment = await Comment.build({ ...req.body });
         comment.id = req.params.commentId;
@@ -122,14 +136,23 @@ router.post(
 /* Delete Comment form */
 router.get(
   "/:articleId/comments/:commentId/delete",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
     const comment = await Comment.findByPk(req.params.commentId);
     if (comment) {
-      res.render("comments/delete", {
-        comment,
-        title: "Delete Comment",
-      });
+      // comment exists
+      if (req.session.userId === comment.UserId) {
+        // user is the author of comment
+        res.render("comments/delete", {
+          comment,
+          title: "Delete Comment",
+        });
+      } else {
+        // user is not the author
+        res.send("You are not the author of this comment");
+      }
     } else {
+      // comment not found
       res.sendStatus(404);
     }
   })
@@ -137,12 +160,21 @@ router.get(
 
 router.post(
   "/:articleId/comments/:commentId/delete",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
     const comment = await Comment.findByPk(req.params.commentId);
     if (comment) {
-      await comment.destroy();
-      res.redirect(`/articles/${req.params.articleId}`);
+      // comment exists
+      if (req.session.userId === comment.UserId) {
+        // user is the author
+        await comment.destroy();
+        res.redirect(`/articles/${req.params.articleId}`);
+      } else {
+        // user is not the author
+        res.send("You are not the author of this comment.");
+      }
     } else {
+      // comment not found
       res.sendStatus(404);
     }
   })

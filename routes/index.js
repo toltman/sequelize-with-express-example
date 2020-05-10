@@ -31,7 +31,7 @@ router.post("/register", async (req, res, next) => {
     let user;
     try {
       user = await User.create(req.body);
-      res.redirect("/articles");
+      res.redirect("/login");
     } catch (err) {
       throw err; // need to catch errors thrown by database
     }

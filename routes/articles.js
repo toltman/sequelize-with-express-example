@@ -85,7 +85,6 @@ router.post(
   "/",
   mid.requiresLogin,
   asyncHandler(async (req, res) => {
-    console.log(req.body);
     let article;
     try {
       article = await Article.create({
@@ -156,20 +155,20 @@ router.get(
       },
       include: {
         model: Comment,
-        // attributes: {
-        //   include: [
-        //     [
-        //       sequelize.literal(
-        //         `(
-        //           SELECT user.name
-        //           FROM Users as user
-        //           WHERE user.id = comment.UserId
-        //         )`
-        //       ),
-        //       "author",
-        //     ],
-        //   ],
-        // },
+        attributes: {
+          include: [
+            [
+              sequelize.literal(
+                `(
+                  SELECT user.name
+                  FROM Users as user
+                  WHERE user.id = Comments.UserId
+                )`
+              ),
+              "author",
+            ],
+          ],
+        },
       },
       order: [[Comment, "createdAt", "DESC"]],
     });
@@ -243,6 +242,7 @@ router.get(
 /* Delete individual article. */
 router.post(
   "/:id/delete",
+  mid.requiresLogin,
   asyncHandler(async (req, res) => {
     const article = await Article.findByPk(req.params.id);
     if (article) {
