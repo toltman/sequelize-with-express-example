@@ -9,12 +9,20 @@ const routes = require("./routes/index");
 const articles = require("./routes/articles");
 const comments = require("./routes/comments");
 
+// const SequelizeStore = require("connect-session-sequelize")(session.Store);
+
+// const sequelize = new Sequelize("database", "username", "password", {
+//   dialect: "sqlite",
+//   storage: "./session.sqlite",
+// });
+
 const app = express();
 
 // use sessions
 app.use(
   session({
     secret: "My first database app",
+    // store: new SequelizeStore({ db: sequelize }),
     resave: false,
     saveUninitialized: false,
   })
